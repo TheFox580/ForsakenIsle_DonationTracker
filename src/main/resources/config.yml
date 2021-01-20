@@ -1,0 +1,16 @@
+# Tutorial: https://github.com/awesomepandapig/DonationBossbar#donation-bossbar
+
+access-token:
+  ""
+campaign-id:
+  ""
+main-title-color:
+  "&c"
+main-bar-color:
+  "GREEN"
+goal-message:
+  "Goal Reached!"
+goal-title-color:
+  "&b"
+goal-bar-color:
+  "BLUE"
