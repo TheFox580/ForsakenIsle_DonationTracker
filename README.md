@@ -1,5 +1,5 @@
 # Donation Bossbar
-## Minecraft Bossbar based on realtime tiltify donation data!
+## Minecraft Bossbar based on realtime Tiltify donation data!
 
 ## Requirements:
 You must have a [Tiltify](https://tiltify.com) account and a published campaign in order to use this plugin.
