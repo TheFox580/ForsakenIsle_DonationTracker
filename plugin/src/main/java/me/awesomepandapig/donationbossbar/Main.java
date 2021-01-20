@@ -80,7 +80,6 @@ public final class Main extends JavaPlugin implements Listener {
                 String goalMsg = this.getConfig().getString("goal-message");
                 String goalTitleColor = this.getConfig().getString("goal-title-color:");
                 String goalBarColor = this.getConfig().getString("goal-bar-color:");
-                Bukkit.getLogger().info(id);
                 bar = new Bar(this);
                 try {
                     bar.createBar(token, id, mainTitleColor, mainBarColor, goalMsg, goalTitleColor, goalBarColor);
