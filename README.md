@@ -7,7 +7,7 @@ You must have a [Tiltify](https://tiltify.com) account and a published campaign 
 
 ## Setup Donation Bossbar
 
-1. Download the [latest version] of the plugin from Spigot.
+1. Download the [latest version](https://www.spigotmc.org/resources/donation-bossbar.88073/) of the plugin from Spigot.
 
 2. Place the downloaded JAR file in your server's ```/plugins``` folder.
 
