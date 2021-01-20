@@ -59,7 +59,7 @@ public final class Main extends JavaPlugin implements Listener {
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (label.equalsIgnoreCase("donationbb")) {
-            if (!sender.hasPermission("donationbb")) {
+            if (!sender.hasPermission("donationbb.reload")) {
                 sender.sendMessage(ChatColor.RED + "I'm sorry, but you do not have permission to perform this command" +
                         ". Please contact the server administrators if you believe that this is in error.");
                 return true;
