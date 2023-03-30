@@ -1,8 +1,8 @@
 name: DonationBossbar
 version: ${project.version}
-main: me.awesomepandapig.donationbossbar.Main
-api-version: 1.16
-authors: [ awesomepandapig ]
+main: me.awesomepandapig.donationbossbar.DonationBossBarPlugin
+api-version: 1.19
+authors: [ awesomepandapig, MarcusSlover ]
 commands:
   donationbb:
     description: Donation Bossbar Menu
