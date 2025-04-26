@@ -1,8 +1,68 @@
 # Tutorial: https://github.com/awesomepandapig/DonationBossbar#donation-bossbar
-access-token: ""
+client-id: ""
+client-secret: ""
 campaign-id: ""
-main-title-color: "&c"
-main-bar-color: "GREEN"
+total_amount_raised: 0
+main-title-color: "&d"
+main-bar-color: "PINK"
 goal-message: "Goal Reached!"
 goal-title-color: "&b"
 goal-bar-color: "BLUE"
+
+#donations -
+#5 =
+#10 =
+#20 =
+#30 =
+#50 =
+#100 =
+
+#Goals -
+#100 =
+#200 =
+#300 =
+#400 =
+#500 =
+
+#donations:
+#  5:
+#    action: ""
+#    title: ""
+#  10:
+#    action: "give {player} minecraft:diamond 1"
+#    title: ""
+#  20:
+#    action: ""
+#    title: ""
+#  30:
+#    action: "summon "
+#    title: ""
+#  50:
+#    action: " "
+#    title: ""
+#  100:
+#    action: "random_effect "
+#    title: ""
+
+#goals:
+#  100:
+#    action: ""
+#    title: ""
+#    reached: false
+#  200:
+#    action: ""
+#    title: ""
+#    reached: false
+#  300:
+#    action: ""
+#    title: ""
+#    reached: false
+#  400:
+#    action: ""
+#    title: ""
+#    reached: false
+#  500:
+#    action: ""
+#    title: ""
+#    reached: false
+#

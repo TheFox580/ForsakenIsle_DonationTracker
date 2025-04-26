@@ -1,4 +1,4 @@
-package me.awesomepandapig.donationbossbar;
+package fr.thefox580.donationbossbar;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import static me.awesomepandapig.donationbossbar.Colors.colorize;
+import static fr.thefox580.donationbossbar.Colors.colorize;
 
 public final class DonationBossBarPlugin extends JavaPlugin {
 
@@ -57,7 +57,6 @@ public final class DonationBossBarPlugin extends JavaPlugin {
         this.donationBar.attemptToCancel();
 
         // get the config values
-        String token = this.getConfig().getString("access-token");
         String id = this.getConfig().getString("campaign-id");
         String mainTitleColor = this.getConfig().getString("main-title-color");
         String mainBarColor = this.getConfig().getString("main-bar-color");
@@ -67,7 +66,7 @@ public final class DonationBossBarPlugin extends JavaPlugin {
 
         // create the boss bar
         this.donationBar = new DonationBar();
-        this.donationBar.createBar(token, id, mainTitleColor, mainBarColor, goalMsg, goalTitleColor, goalBarColor);
+        this.donationBar.createBar(id, mainTitleColor, mainBarColor, goalMsg, goalTitleColor, goalBarColor);
 
         // add all online players to the boss bar
         Bukkit.getOnlinePlayers().forEach(this.donationBar::addPlayer);
@@ -85,11 +84,12 @@ public final class DonationBossBarPlugin extends JavaPlugin {
                 return true;
             }
             if (args.length == 0) {
-                sender.sendMessage(colorize("&2[&aDonation Bossbar&2]\n&aVersion:&7 1.0\n&aDeveloper:&7 awesomepandapig\n&aCommands:&7 /donationbb reload"));
+                sender.sendMessage(colorize("&2[&aDonation Bossbar&2]\n&aVersion:&7 1.0\n&aDeveloper:&7 awesomepandapig, TheFox580\n&aCommands:&7 /donationbb reload"));
                 return true;
             }
 
             if (args[0].equalsIgnoreCase("reload")) {
+                this.reloadConfig();
                 sender.sendMessage(colorize("&aReloaded Donation Bossbar&r"));
                 this.createBossBar();
             }

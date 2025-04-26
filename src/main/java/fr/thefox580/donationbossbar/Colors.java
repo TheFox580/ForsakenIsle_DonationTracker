@@ -1,4 +1,4 @@
-package me.awesomepandapig.donationbossbar;
+package fr.thefox580.donationbossbar;
 
 import org.bukkit.ChatColor;
 
