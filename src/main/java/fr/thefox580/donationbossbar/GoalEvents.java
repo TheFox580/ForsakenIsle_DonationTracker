@@ -5,7 +5,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -53,6 +56,10 @@ public class GoalEvents {
                             String title = config.getString("donations." + key + ".title");
                             String donator = donorData.get("donor_name").getAsString();
                             String comment = donorData.get("donor_comment").getAsString();
+                            Bukkit.getOnlinePlayers().forEach(player -> {
+                                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.RECORDS, 1, 1);
+                                player.sendTitle("New Donation!", "Look in chat");
+                            });
                             if (!Objects.equals(comment, "")) {
                                 Bukkit.broadcastMessage(colorize(donator + "&adonated &2&l£" + donorAmount + "&a and said : \"" + comment + "\""));
                             } else {
@@ -76,6 +83,10 @@ public class GoalEvents {
                 double donorAmount = donorData.get("amount").getAsJsonObject().get("value").getAsDouble();
                 String donator = donorData.get("donor_name").getAsString();
                 String comment = donorData.get("donor_comment").getAsString();
+                Bukkit.getOnlinePlayers().forEach(player -> {
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.RECORDS, 1, 1);
+                    player.sendTitle("New Donation!", "Look in chat");
+                });
                 if (!Objects.equals(comment, "")) {
                     Bukkit.broadcastMessage(colorize(donator + "&adonated &2&l£" + donorAmount + "&a and said : \"" + comment + "\""));
                 } else {
