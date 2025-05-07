@@ -63,8 +63,8 @@ public final class DonationBar {
                         double diff = totalAmountRaised - config.getDouble("total_amount_raised");
                         config.set("total_amount_raised", totalAmountRaised);
                         DonationBossBarPlugin.getInstance().saveConfig();
+                        goalEvents.checkDonations(diff);
                         //goalEvents.checkGoals(diff);
-                        //goalEvents.checkDonations(diff);
                     }
                 });
             } catch (IOException e) {

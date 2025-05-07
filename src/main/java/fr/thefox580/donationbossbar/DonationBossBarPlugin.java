@@ -11,11 +11,14 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+
 import static fr.thefox580.donationbossbar.Colors.colorize;
 
 public final class DonationBossBarPlugin extends JavaPlugin {
 
     private DonationBar donationBar;
+    private GoalEvents goalEvents;
 
     public static DonationBossBarPlugin getInstance() {
         return DonationBossBarPlugin.getPlugin(DonationBossBarPlugin.class);
@@ -84,15 +87,23 @@ public final class DonationBossBarPlugin extends JavaPlugin {
                 return true;
             }
             if (args.length == 0) {
-                sender.sendMessage(colorize("&2[&aDonation Bossbar&2]\n&aVersion:&7 1.0\n&aDeveloper:&7 awesomepandapig, TheFox580\n&aCommands:&7 /donationbb reload"));
+                sender.sendMessage(colorize("&2[&aDonation Bossbar&2]\n&aVersion:&7 1.0\n&aDeveloper:&7 awesomepandapig, TheFox580\n&aCommands:&7 /donationbb reload, /donationbb donations <int>"));
                 return true;
-            }
-
-            if (args[0].equalsIgnoreCase("reload")) {
+            } else {
+                if (args[0].equalsIgnoreCase("reload")) {
                 this.reloadConfig();
                 sender.sendMessage(colorize("&aReloaded Donation Bossbar&r"));
                 this.createBossBar();
+            } else if (args[0].equalsIgnoreCase("donations")){
+                    try {
+                        goalEvents.showDonations(Integer.parseInt(args[1]));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
+
+
         }
         return false;
     }

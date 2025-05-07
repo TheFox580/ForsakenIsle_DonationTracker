@@ -6,7 +6,7 @@
 
     <groupId>fr.thefox580.donationbossbar</groupId>
     <artifactId>ForsakenIsle-DonationBar</artifactId>
-    <version>3.0</version>
+    <version>3.1</version>
     <packaging>jar</packaging>
 
     <name>Forsaken Isle | Donation Bossbar</name>
