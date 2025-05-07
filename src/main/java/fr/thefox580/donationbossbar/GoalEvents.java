@@ -39,10 +39,10 @@ public class GoalEvents {
 
         Objects.requireNonNull(config.getConfigurationSection("donations")).getKeys(false).forEach(key -> {
             try {
-                final JsonObject jsonObject = requestDonorsJson(config.getString("campaign-id"), 3);
+                final JsonObject jsonObject = requestDonorsJson(config.getString("campaign-id"), 10);
                 JsonArray data = jsonObject.get("data").getAsJsonArray();
                 double dono = amount;
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < 10; i++) {
                     if (dono <= 0) {
                         break;
                     } else if (data.get(i).isJsonNull()) {
@@ -50,21 +50,18 @@ public class GoalEvents {
                     } else {
                         JsonObject donorData = data.get(i).getAsJsonObject();
                         double donorAmount = donorData.get("amount").getAsJsonObject().get("value").getAsDouble();
+                        Bukkit.getLogger().warning("New £"+donorAmount+" donation");
                         dono -= donorAmount;
-                        if (donorAmount >= Double.parseDouble(key)) {
-                            String action = config.getString("donations." + key + ".action");
-                            String title = config.getString("donations." + key + ".title");
-                            String donator = donorData.get("donor_name").getAsString();
-                            String comment = donorData.get("donor_comment").getAsString();
-                            Bukkit.getOnlinePlayers().forEach(player -> {
-                                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.RECORDS, 1, 1);
-                                player.sendTitle("New Donation!", "Look in chat");
-                            });
-                            if (!Objects.equals(comment, "")) {
-                                Bukkit.broadcastMessage(colorize(donator + " &adonated &2&l£" + donorAmount + "&a and said : \"" + comment + "\""));
-                            } else {
-                                Bukkit.broadcastMessage(colorize(donator + " &adonated &2&l£" + donorAmount + "&a!"));
-                            }
+                        String donator = donorData.get("donor_name").getAsString();
+                        String comment = donorData.get("donor_comment").getAsString();
+                        Bukkit.getOnlinePlayers().forEach(player -> {
+                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.RECORDS, 1, 1);
+                            player.sendTitle("New Donation!", "Look in chat");
+                        });
+                        if (!Objects.equals(comment, "")) {
+                            Bukkit.broadcastMessage(colorize(donator + " &adonated &2&l£" + donorAmount + "&a and said : \"" + comment + "\""));
+                        } else {
+                            Bukkit.broadcastMessage(colorize(donator + " &adonated &2&l£" + donorAmount + "&a!"));
                         }
                     }
                 }

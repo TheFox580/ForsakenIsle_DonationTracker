@@ -61,6 +61,7 @@ public final class DonationBar {
                     // Check goals based on the donations that were done
                     if (config.getDouble("total_amount_raised") < totalAmountRaised){
                         double diff = totalAmountRaised - config.getDouble("total_amount_raised");
+                        Bukkit.getLogger().warning("We've raised £" + diff + " more!");
                         config.set("total_amount_raised", totalAmountRaised);
                         DonationBossBarPlugin.getInstance().saveConfig();
                         goalEvents.checkDonations(diff);
