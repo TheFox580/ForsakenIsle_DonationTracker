@@ -52,6 +52,7 @@ public final class DonationBossBarPlugin extends JavaPlugin {
 
         if (this.donationBar == null) { // if null then create a new instance
             this.donationBar = new DonationBar();
+            this.goalEvents = new GoalEvents(this);
         }
 
         // remove all players from the boss bar and cancel the task

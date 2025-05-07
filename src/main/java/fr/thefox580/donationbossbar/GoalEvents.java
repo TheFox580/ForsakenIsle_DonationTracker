@@ -61,9 +61,9 @@ public class GoalEvents {
                                 player.sendTitle("New Donation!", "Look in chat");
                             });
                             if (!Objects.equals(comment, "")) {
-                                Bukkit.broadcastMessage(colorize(donator + "&adonated &2&l£" + donorAmount + "&a and said : \"" + comment + "\""));
+                                Bukkit.broadcastMessage(colorize(donator + " &adonated &2&l£" + donorAmount + "&a and said : \"" + comment + "\""));
                             } else {
-                                Bukkit.broadcastMessage(colorize(donator + "&adonated &2&l£" + donorAmount + "&a!"));
+                                Bukkit.broadcastMessage(colorize(donator + " &adonated &2&l£" + donorAmount + "&a!"));
                             }
                         }
                     }
@@ -88,9 +88,9 @@ public class GoalEvents {
                     player.sendTitle("New Donation!", "Look in chat");
                 });
                 if (!Objects.equals(comment, "")) {
-                    Bukkit.broadcastMessage(colorize(donator + "&adonated &2&l£" + donorAmount + "&a and said : \"" + comment + "\""));
+                    Bukkit.broadcastMessage(colorize(donator + " &adonated &2&l£" + donorAmount + "&a and said : \"" + comment + "\""));
                 } else {
-                    Bukkit.broadcastMessage(colorize(donator + "&adonated &2&l£" + donorAmount + "&a!"));
+                    Bukkit.broadcastMessage(colorize(donator + " &adonated &2&l£" + donorAmount + "&a!"));
                 }
             }
         }  catch (IOException e) {
