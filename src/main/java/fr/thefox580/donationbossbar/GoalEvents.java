@@ -53,7 +53,10 @@ public class GoalEvents {
                         Bukkit.getLogger().warning("New £"+donorAmount+" donation");
                         dono -= donorAmount;
                         String donator = donorData.get("donor_name").getAsString();
-                        String comment = donorData.get("donor_comment").getAsString();
+                        String comment = "";
+                        if (!donorData.get("donor_comment").isJsonNull()){
+                            comment = donorData.get("donor_comment").getAsString();
+                        }
                         Bukkit.getOnlinePlayers().forEach(player -> {
                             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.RECORDS, 1, 1);
                             player.sendTitle("New Donation!", "Look in chat");
