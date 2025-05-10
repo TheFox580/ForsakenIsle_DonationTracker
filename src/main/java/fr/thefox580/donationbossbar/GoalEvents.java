@@ -5,22 +5,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import static fr.thefox580.donationbossbar.Colors.colorize;
@@ -35,43 +30,43 @@ public class GoalEvents {
     }
 
     // Check and process donations based on amount
-    public void checkDonations(final double amount) {
-
-        Objects.requireNonNull(config.getConfigurationSection("donations")).getKeys(false).forEach(key -> {
-            try {
-                final JsonObject jsonObject = requestDonorsJson(config.getString("campaign-id"), 10);
-                JsonArray data = jsonObject.get("data").getAsJsonArray();
-                double dono = amount;
-                for (int i = 0; i < 10; i++) {
-                    if (dono <= 0) {
-                        break;
-                    } else if (data.get(i).isJsonNull()) {
-                        break;
-                    } else {
-                        JsonObject donorData = data.get(i).getAsJsonObject();
-                        double donorAmount = donorData.get("amount").getAsJsonObject().get("value").getAsDouble();
-                        Bukkit.getLogger().warning("New £"+donorAmount+" donation");
-                        dono -= donorAmount;
-                        String donator = donorData.get("donor_name").getAsString();
-                        String comment = "";
-                        if (!donorData.get("donor_comment").isJsonNull()){
-                            comment = donorData.get("donor_comment").getAsString();
-                        }
-                        Bukkit.getOnlinePlayers().forEach(player -> {
-                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.RECORDS, 1, 1);
-                            player.sendTitle("New Donation!", "Look in chat");
-                        });
-                        if (!Objects.equals(comment, "")) {
-                            Bukkit.broadcastMessage(colorize(donator + " &adonated &2&l£" + donorAmount + "&a and said : \"" + comment + "\""));
-                        } else {
-                            Bukkit.broadcastMessage(colorize(donator + " &adonated &2&l£" + donorAmount + "&a!"));
-                        }
-                    }
+    public void checkDonations(final double amount) throws IOException {
+        final JsonObject jsonObject = requestDonorsJson(config.getString("campaign-id"), 10);
+        JsonArray data = jsonObject.get("data").getAsJsonArray();
+        double dono = amount;
+        for (int i = 0; i < 10; i++) {
+            if (dono <= 0) {
+                break;
+            } else if (data.get(i).isJsonNull()) {
+                break;
+            } else {
+                JsonObject donorData = data.get(i).getAsJsonObject();
+                double donorAmount = donorData.get("amount").getAsJsonObject().get("value").getAsDouble();
+                Bukkit.getLogger().warning("New £"+donorAmount+" donation");
+                dono -= donorAmount;
+                String donator = donorData.get("donor_name").getAsString();
+                String comment = "";
+                if (!donorData.get("donor_comment").isJsonNull()){
+                    comment = donorData.get("donor_comment").getAsString();
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                boolean reward = !donorData.get("reward_claims").isJsonNull();
+                if (reward){
+                    String username = comment;
+                    comment = "";
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"revive " + username);
+                    Bukkit.broadcastMessage(colorize(donator + " &ahas revived &2&l" + username));
+                }
+                Bukkit.getOnlinePlayers().forEach(player -> {
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.RECORDS, 1, 1);
+                    player.sendTitle("New Donation!", "Look in chat");
+                });
+                if (!Objects.equals(comment, "")) {
+                    Bukkit.broadcastMessage(colorize(donator + " &adonated &2&l£" + donorAmount + "&a and said : \"" + comment + "\""));
+                } else {
+                    Bukkit.broadcastMessage(colorize(donator + " &adonated &2&l£" + donorAmount + "&a!"));
+                }
             }
-        });
+        }
     }
 
     public void showDonations(int nbDonos) throws IOException {
@@ -82,7 +77,17 @@ public class GoalEvents {
                 JsonObject donorData = data.get(i).getAsJsonObject();
                 double donorAmount = donorData.get("amount").getAsJsonObject().get("value").getAsDouble();
                 String donator = donorData.get("donor_name").getAsString();
-                String comment = donorData.get("donor_comment").getAsString();
+                String comment = "";
+                if (!donorData.get("donor_comment").isJsonNull()){
+                    comment = donorData.get("donor_comment").getAsString();
+                }
+                boolean reward = !donorData.get("reward_claims").isJsonNull();
+                if (reward){
+                    String username = comment;
+                    comment = "";
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"revive " + username);
+                    Bukkit.broadcastMessage(colorize(donator + " &ahas revived &2&l" + username));
+                }
                 Bukkit.getOnlinePlayers().forEach(player -> {
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.RECORDS, 1, 1);
                     player.sendTitle("New Donation!", "Look in chat");
