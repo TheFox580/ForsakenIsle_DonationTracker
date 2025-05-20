@@ -64,7 +64,9 @@ public class GoalEvents {
                         if (rightTarget.get("title").getAsString().startsWith("Revive a Player")){
                             String title = rightTarget.get("title").getAsString();
                             String username = title.substring(title.lastIndexOf(" ")+1);
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"revive " + username);
+                            if (rightTarget.get("amount").getAsJsonObject().get("value").getAsDouble() <= rightTarget.get("amount_raised").getAsJsonObject().get("value").getAsDouble()){
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"revive " + username);
+                            }
                             Bukkit.broadcastMessage(colorize(donator + " &adonated £"+ donorAmount +" to try and revive &2&l" + username));
                         }
                     } else {
@@ -91,17 +93,35 @@ public class GoalEvents {
             for (int i = 0; i < nbDonos; i++) {
                 JsonObject donorData = data.get(i).getAsJsonObject();
                 double donorAmount = donorData.get("amount").getAsJsonObject().get("value").getAsDouble();
+                Bukkit.getLogger().warning("New £"+donorAmount+" donation");
                 String donator = donorData.get("donor_name").getAsString();
+                boolean target = !donorData.get("target_id").isJsonNull();
                 String comment = "";
                 if (!donorData.get("donor_comment").isJsonNull()){
                     comment = donorData.get("donor_comment").getAsString();
                 }
-                boolean reward = !donorData.get("reward_claims").isJsonNull();
-                if (reward){
-                    String username = comment;
-                    comment = "";
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"revive " + username);
-                    Bukkit.broadcastMessage(colorize(donator + " &ahas revived &2&l" + username));
+                if (target){
+                    String targetId = donorData.get("target_id").getAsString();
+                    final JsonObject jsonObjectTarget = requestTargetsJson(config.getString("campaign-id"), 10);
+                    JsonArray targetData = jsonObjectTarget.get("data").getAsJsonArray();
+                    JsonObject rightTarget = new JsonObject();
+                    for (int j = 0; j < targetData.size(); j++){
+                        if (Objects.equals(targetData.get(j).getAsJsonObject().get("id").getAsString(), targetId)){
+                            rightTarget = targetData.get(j).getAsJsonObject();
+                        }
+                    }
+                    if (!Objects.equals(rightTarget, new JsonObject())){
+                        if (rightTarget.get("title").getAsString().startsWith("Revive a Player")){
+                            String title = rightTarget.get("title").getAsString();
+                            String username = title.substring(title.lastIndexOf(" ")+1);
+                            if (rightTarget.get("amount").getAsJsonObject().get("value").getAsDouble() <= rightTarget.get("amount_raised").getAsJsonObject().get("value").getAsDouble()){
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"revive " + username);
+                            }
+                            Bukkit.broadcastMessage(colorize(donator + " &adonated £"+ donorAmount +" to try and revive &2&l" + username));
+                        }
+                    } else {
+                        Bukkit.getLogger().warning("The target id " + targetId + "could not be found.");
+                    }
                 }
                 Bukkit.getOnlinePlayers().forEach(player -> {
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.RECORDS, 1, 1);
