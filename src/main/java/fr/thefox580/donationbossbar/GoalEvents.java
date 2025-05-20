@@ -58,11 +58,12 @@ public class GoalEvents {
                     for (int j = 0; j < targetData.size(); j++){
                         if (Objects.equals(targetData.get(j).getAsJsonObject().get("id").getAsString(), targetId)){
                             rightTarget = targetData.get(j).getAsJsonObject();
+                            break;
                         }
                     }
                     if (!Objects.equals(rightTarget, new JsonObject())){
-                        if (rightTarget.get("title").getAsString().startsWith("Revive a Player")){
-                            String title = rightTarget.get("title").getAsString();
+                        if (rightTarget.get("name").getAsString().startsWith("Revive a Player")){
+                            String title = rightTarget.get("name").getAsString();
                             String username = title.substring(title.lastIndexOf(" ")+1);
                             if (rightTarget.get("amount").getAsJsonObject().get("value").getAsDouble() <= rightTarget.get("amount_raised").getAsJsonObject().get("value").getAsDouble()){
                                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"revive " + username);
@@ -111,8 +112,8 @@ public class GoalEvents {
                         }
                     }
                     if (!Objects.equals(rightTarget, new JsonObject())){
-                        if (rightTarget.get("title").getAsString().startsWith("Revive a Player")){
-                            String title = rightTarget.get("title").getAsString();
+                        if (rightTarget.get("name").getAsString().startsWith("Revive a Player")){
+                            String title = rightTarget.get("name").getAsString();
                             String username = title.substring(title.lastIndexOf(" ")+1);
                             if (rightTarget.get("amount").getAsJsonObject().get("value").getAsDouble() <= rightTarget.get("amount_raised").getAsJsonObject().get("value").getAsDouble()){
                                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"revive " + username);
