@@ -1,9 +1,6 @@
 package fr.thefox580.donationbossbar;
 
-import com.google.common.net.HttpHeaders;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -13,13 +10,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -29,10 +22,11 @@ public final class DonationBar {
     private BossBar bar;
     private BukkitTask bukkitTask;
     private final GoalEvents goalEvents;
+    private final DonationBossBarPlugin plugin = DonationBossBarPlugin.getInstance();
     static FileConfiguration config = DonationBossBarPlugin.getInstance().getConfig();
 
     public DonationBar() {
-        this.goalEvents = new GoalEvents(DonationBossBarPlugin.getInstance());
+        this.goalEvents = new GoalEvents(plugin);
     }
 
     public void createBar(String id, String mainTitleColor, String mainBarColor, String goalMsg, String goalTitleColor, String goalBarColor) {
@@ -41,7 +35,7 @@ public final class DonationBar {
 
         this.bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(DonationBossBarPlugin.getInstance(), () -> {
             try {
-                final JsonObject jsonObject = requestJson(id);
+                final JsonObject jsonObject = plugin.getTiltifyData().requestJson(new URI("https://v5api.tiltify.com/api/public/team_campaigns/" + id).toURL());
                 Bukkit.getScheduler().runTask(DonationBossBarPlugin.getInstance(), () -> {
                     JsonObject data = jsonObject.get("data").getAsJsonObject();
                     double totalAmountRaised = data.get("amount_raised").getAsJsonObject().get("value").getAsDouble();
@@ -62,75 +56,21 @@ public final class DonationBar {
                     if (config.getDouble("total_amount_raised") < totalAmountRaised){
                         double diff = totalAmountRaised - config.getDouble("total_amount_raised");
                         diff = (double) Math.round(diff * 100) / 100;
-                        Bukkit.getLogger().warning("We've raised £" + diff + " more!");
+                        plugin.getLogger().warning("We've raised £" + diff + " more!");
                         config.set("total_amount_raised", totalAmountRaised);
-                        DonationBossBarPlugin.getInstance().saveConfig();
+                        plugin.saveConfig();
                         try {
                             goalEvents.checkDonations(diff);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
+                        } catch (IOException | URISyntaxException e) {
+                            plugin.getLogger().warning(e.toString());
                         }
                         //goalEvents.checkGoals(diff);
                     }
                 });
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException | URISyntaxException e) {
+                plugin.getLogger().warning(e.toString());
             }
-        }, 0L, 20 * 30L);
-    }
-
-    public static JsonElement requestToken() throws IOException {
-        URL obj = new URL("https://v5api.tiltify.com/oauth/token");
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0");
-
-        // For POST only - START
-        con.setDoOutput(true);
-        OutputStream os = con.getOutputStream();
-
-        String client_id = config.getString("client-id");
-        String client_secret = config.getString("client-secret");
-        String jsonInputString = "{\"grant_type\":\"client_credentials\",\"client_id\":\"" + client_id + "\",\"client_secret\":\"" + client_secret + "\",\"scope\":\"public\"}";
-
-        byte[] out = jsonInputString.getBytes(StandardCharsets.UTF_8);
-
-        os.write(out);
-        os.flush();
-        os.close();
-        // For POST only - END
-
-        JsonElement data = null;
-        int responseCode = con.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) { //success
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-                data = JsonParser.parseReader(reader);
-            }
-            if (data == null) throw new RuntimeException("Could not get the response, the data is null.");
-            if (data.isJsonObject()) return data.getAsJsonObject();
-            throw new RuntimeException("Invalid response!");
-
-
-        }
-        return data;
-    }
-
-    public static JsonObject requestJson(String id) throws IOException {
-        URL url = new URL("https://v5api.tiltify.com/api/public/team_campaigns/" + id);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        String token = requestToken().getAsJsonObject().get("access_token").getAsString();
-        conn.setRequestProperty(HttpHeaders.AUTHORIZATION, "Bearer " + token);
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestMethod("GET");
-
-        JsonElement data;
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-            data = JsonParser.parseReader(reader);
-        }
-        if (data == null) throw new RuntimeException("Could not get the response, the data is null.");
-        if (data.isJsonObject()) return data.getAsJsonObject();
-        throw new RuntimeException("Invalid response!");
+        }, 0L, 10 * 20L);
     }
 
     private String formatNumber(double number) {

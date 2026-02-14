@@ -9,6 +9,8 @@ goal-message: "Goal Reached!"
 goal-title-color: "&b"
 goal-bar-color: "BLUE"
 
+players_uuid:
+
 #donations -
 #5 =
 #10 =
