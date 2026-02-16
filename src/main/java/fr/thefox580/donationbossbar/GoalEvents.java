@@ -64,6 +64,7 @@ public class GoalEvents {
         }
     }
 
+    //checking manually for the last x donations
     public void checkDonations(int nbDonos) throws IOException {
         try{
             final JsonObject jsonObject = plugin.getTiltifyData().requestJson(new URI("https://v5api.tiltify.com/api/public/team_campaigns/" + config.getString("campaign-id") + "/donations?limit=" + nbDonos).toURL());
