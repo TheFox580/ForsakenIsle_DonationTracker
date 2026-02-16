@@ -27,7 +27,7 @@ public class GoalEvents {
 
     // Check and process donations based on amount
     public void checkDonations(final double amount) throws IOException, URISyntaxException {
-        final JsonObject jsonObject = plugin.getTiltifyData().requestJson(new URI("https://v5api.tiltify.com/api/public/team_campaigns/" + config.getString("campaign-id") + "/donations?limit=10").toURL());
+        final JsonObject jsonObject = plugin.getTiltifyData().requestJson(new URI(" " + config.getString("campaign-id") + "/donations?limit=10").toURL());
         JsonArray data = jsonObject.get("data").getAsJsonArray();
         double dono = amount;
         for (int i = 0; i < data.size(); i++) {
@@ -41,23 +41,23 @@ public class GoalEvents {
                 plugin.getLogger().warning("New £"+donorAmount+" donation");
                 dono -= donorAmount;
                 String donator = donorData.get("donor_name").getAsString();
-                boolean target = !donorData.get("target_id").isJsonNull();
+                boolean reward = !donorData.get("reward_id").isJsonNull();
                 String comment = "";
                 if (!donorData.get("donor_comment").isJsonNull()){
                     comment = donorData.get("donor_comment").getAsString();
                 }
-                if (target){
-                    String targetId = donorData.get("target_id").getAsString();
-                    final JsonObject jsonObjectTarget = plugin.getTiltifyData().requestJson(new URI("https://v5api.tiltify.com/api/public/team_campaigns/" + config.getString("campaign-id") + "/targets?limit=" + 50).toURL());
-                    JsonArray targetData = jsonObjectTarget.get("data").getAsJsonArray();
-                    JsonObject rightTarget = new JsonObject();
-                    for (int j = 0; j < targetData.size(); j++){
-                        if (Objects.equals(targetData.get(j).getAsJsonObject().get("id").getAsString(), targetId)){
-                            rightTarget = targetData.get(j).getAsJsonObject();
+                if (reward){
+                    String rewardId = donorData.get("reward_id").getAsString();
+                    final JsonObject jsonObjectReward = plugin.getTiltifyData().requestJson(new URI("https://v5api.tiltify.com/api/public/team_campaigns/" + config.getString("campaign-id") + "/rewards?limit=" + 50).toURL());
+                    JsonArray rewardData = jsonObjectReward.get("data").getAsJsonArray();
+                    JsonObject rightReward = new JsonObject();
+                    for (int j = 0; j < rewardData.size(); j++){
+                        if (Objects.equals(rewardData.get(j).getAsJsonObject().get("id").getAsString(), rewardId)){
+                            rightReward = rewardData.get(j).getAsJsonObject();
                             break;
                         }
                     }
-                    checkReviveTarget(donorAmount, donator, targetId, rightTarget);
+                    checkReviveReward(donorAmount, donator, rewardId, rightReward);
                 }
                 announceDonation(donorAmount, donator, comment);
             }
@@ -73,22 +73,25 @@ public class GoalEvents {
                 double donorAmount = donorData.get("amount").getAsJsonObject().get("value").getAsDouble();
                 plugin.getLogger().warning("New £"+donorAmount+" donation");
                 String donator = donorData.get("donor_name").getAsString();
-                boolean target = !donorData.get("target_id").isJsonNull();
+                boolean reward = !donorData.get("reward_id").isJsonNull();
                 String comment = "";
+
                 if (!donorData.get("donor_comment").isJsonNull()){
                     comment = donorData.get("donor_comment").getAsString();
                 }
-                if (target){
-                    String targetId = donorData.get("target_id").getAsString();
-                    final JsonObject jsonObjectTarget = plugin.getTiltifyData().requestJson(new URI("https://v5api.tiltify.com/api/public/team_campaigns/" + config.getString("campaign-id") + "/targets?limit=" + 50).toURL());
-                    JsonArray targetData = jsonObjectTarget.get("data").getAsJsonArray();
-                    JsonObject rightTarget = new JsonObject();
-                    for (int j = 0; j < targetData.size(); j++){
-                        if (Objects.equals(targetData.get(j).getAsJsonObject().get("id").getAsString(), targetId)){
-                            rightTarget = targetData.get(j).getAsJsonObject();
+
+                if (reward){
+                    String rewardId = donorData.get("reward_id").getAsString();
+                    final JsonObject jsonObjectReward = plugin.getTiltifyData().requestJson(new URI("https://v5api.tiltify.com/api/public/team_campaigns/" + config.getString("campaign-id") + "/rewards?limit=" + 50).toURL());
+                    JsonArray rewardData = jsonObjectReward.get("data").getAsJsonArray();
+                    JsonObject rightReward = new JsonObject();
+                    for (int j = 0; j < rewardData.size(); j++){
+                        if (Objects.equals(rewardData.get(j).getAsJsonObject().get("id").getAsString(), rewardId)){
+                            rightReward = rewardData.get(j).getAsJsonObject();
                         }
                     }
-                    checkReviveTarget(donorAmount, donator, targetId, rightTarget);
+
+                    checkReviveReward(donorAmount, donator, rewardId, rightReward);
                 }
                 announceDonation(donorAmount, donator, comment);
             }
@@ -97,20 +100,16 @@ public class GoalEvents {
         }
     }
 
-    private void checkReviveTarget(double donorAmount, String donator, String targetId, JsonObject rightTarget) {
-        if (!Objects.equals(rightTarget, new JsonObject())){
-            if (rightTarget.get("name").getAsString().startsWith("Revive a Player")){
-                String title = rightTarget.get("name").getAsString();
+    private void checkReviveReward(double donorAmount, String donator, String rewardId, JsonObject rightReward) {
+        if (!Objects.equals(rightReward, new JsonObject())){
+            if (rightReward.get("name").getAsString().startsWith("Revive")){
+                String title = rightReward.get("name").getAsString();
                 String username = title.substring(title.lastIndexOf(" ")+1);
-                if (rightTarget.get("amount").getAsJsonObject().get("value").getAsDouble() <= rightTarget.get("amount_raised").getAsJsonObject().get("value").getAsDouble()){
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"revive " + username);
-                    Bukkit.broadcast(colorizeComponent(donator + " &adonated £"+ donorAmount +" and revived &2&l" + username));
-                } else {
-                    Bukkit.broadcast(colorizeComponent(donator + " &adonated £"+ donorAmount +" to help revive &2&l" + username));
-                }
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"revive " + username);
+                Bukkit.broadcast(colorizeComponent(donator + " &adonated £"+ donorAmount +" and revived &2&l" + username));
             }
         } else {
-            plugin.getLogger().warning("The target id " + targetId + "could not be found.");
+            plugin.getLogger().warning("The reward id \"" + rewardId + "\" could not be found.");
         }
     }
 
